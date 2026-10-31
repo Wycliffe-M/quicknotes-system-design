@@ -31,8 +31,14 @@ function createNoteItem(note) {
   const body = document.createElement("p");
   body.textContent = note.body;
 
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.className = "delete-btn";
+  deleteBtn.addEventListener("click", () => deleteNote(note, li, deleteBtn));
+
   li.appendChild(title);
   li.appendChild(body);
+  li.appendChild(deleteBtn);
   return li;
 }
 
@@ -78,6 +84,41 @@ function validateTitle(title) {
   return "";
 }
 
+// JSONPlaceholder does not really save notes. A note we create comes back
+// with id 101, but that id does not exist on the server, so DELETE /posts/101
+// would fail with a 404. Notes created in this session are flagged
+// `local`, so we remove them from the page only. Notes loaded from the
+// server (ids 1-10) are deleted with a real DELETE request.
+async function deleteNote(note, li, deleteBtn) {
+  if (note.local) {
+    li.remove();
+    showStatus("Note removed from the page.", "success");
+    return;
+  }
+
+  showStatus("Deleting note...", "loading");
+  deleteBtn.disabled = true;
+
+  try {
+    const response = await request(API_URL + "/" + note.id, {
+      method: "DELETE",
+    });
+    li.remove();
+    showStatus(
+      "Note " + note.id + " deleted (status " + response.status + ").",
+      "success"
+    );
+    if (notesList.children.length === 0) {
+      renderNotes([]);
+    }
+  } catch (error) {
+    showStatus("Could not delete the note. Please try again.", "error");
+    console.error(error);
+  } finally {
+    deleteBtn.disabled = false;
+  }
+}
+
 loadBtn.addEventListener("click", loadNotes);
 
 async function createNote(event) {
@@ -102,6 +143,7 @@ async function createNote(event) {
       body: JSON.stringify({ title, body, userId: 1 }),
     });
     const created = await response.json();
+    created.local = true;
 
     // Remove the "No notes yet." message if it is showing
     if (notesList.children.length === 1 && notesList.firstChild.textContent === "No notes yet.") {
