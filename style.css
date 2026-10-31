@@ -1,0 +1,68 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+}
+
+main {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+input,
+textarea {
+  padding: 0.5rem;
+  font: inherit;
+}
+
+#status {
+  min-height: 1.5rem;
+}
+
+#status.loading {
+  color: #555;
+}
+
+#status.success {
+  color: #1b7a2f;
+  background: #e6f4ea;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+#status.error {
+  color: #b00020;
+  background: #fdecea;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+#notes-list {
+  list-style: none;
+  padding: 0;
+}
+
+#notes-list li {
+  border-bottom: 1px solid #ddd;
+  padding: 0.75rem 0;
+}
